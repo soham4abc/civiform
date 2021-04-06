@@ -3,17 +3,18 @@ package services.applicant.question;
 import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
 import services.Path;
+import services.applicant.ApplicantData;
 import services.applicant.ValidationErrorMessage;
+import services.question.QuestionDefinition;
 import services.question.QuestionType;
 import services.question.TextQuestionDefinition;
 
-public class TextQuestion implements PresentsErrors {
+public class TextQuestion extends ApplicantQuestion {
 
-  private final ApplicantQuestion applicantQuestion;
   private Optional<String> textValue;
 
-  public TextQuestion(ApplicantQuestion applicantQuestion) {
-    this.applicantQuestion = applicantQuestion;
+  public TextQuestion(QuestionDefinition questionDefinition, ApplicantData applicantData) {
+    super(questionDefinition, applicantData);
     assertQuestionType();
   }
 
@@ -64,24 +65,21 @@ public class TextQuestion implements PresentsErrors {
       return textValue;
     }
 
-    textValue = applicantQuestion.getApplicantData().readString(getTextPath());
+    textValue = getApplicantData().readString(getTextPath());
 
     return textValue;
   }
 
   public void assertQuestionType() {
-    if (!applicantQuestion.getType().equals(QuestionType.TEXT)) {
+    if (!getType().equals(QuestionType.TEXT)) {
       throw new RuntimeException(
-          String.format(
-              "Question is not a TEXT question: %s (type: %s)",
-              applicantQuestion.getQuestionDefinition().getPath(),
-              applicantQuestion.getQuestionDefinition().getQuestionType()));
+          String.format("Question is not a TEXT question: %s (type: %s)", getPath(), getType()));
     }
   }
 
   public TextQuestionDefinition getQuestionDefinition() {
     assertQuestionType();
-    return (TextQuestionDefinition) applicantQuestion.getQuestionDefinition();
+    return (TextQuestionDefinition) super.getQuestionDefinition();
   }
 
   public Path getTextPath() {

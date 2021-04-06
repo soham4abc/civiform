@@ -47,10 +47,7 @@ public class NumberQuestionTest {
 
   @Test
   public void withEmptyApplicantData() {
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(numberQuestionDefinition, applicantData);
-
-    NumberQuestion numberQuestion = new NumberQuestion(applicantQuestion);
+    NumberQuestion numberQuestion = new NumberQuestion(numberQuestionDefinition, applicantData);
 
     assertThat(numberQuestion.hasTypeSpecificErrors()).isFalse();
     assertThat(numberQuestion.hasQuestionErrors()).isFalse();
@@ -59,10 +56,7 @@ public class NumberQuestionTest {
   @Test
   public void withValidApplicantData() {
     applicantData.putLong(numberQuestionDefinition.getNumberPath(), 800);
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(numberQuestionDefinition, applicantData);
-
-    NumberQuestion numberQuestion = applicantQuestion.getNumberQuestion();
+    NumberQuestion numberQuestion = new NumberQuestion(numberQuestionDefinition, applicantData);
 
     assertThat(numberQuestion.hasTypeSpecificErrors()).isFalse();
     assertThat(numberQuestion.getNumberValue().get()).isEqualTo(800);
@@ -72,10 +66,7 @@ public class NumberQuestionTest {
   @Parameters({"50", "75", "100"})
   public void withMinAndMaxValue_withValidApplicantData_passesValidation(long value) {
     applicantData.putLong(minAndMaxNumberQuestionDefinition.getNumberPath(), value);
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(minAndMaxNumberQuestionDefinition, applicantData);
-
-    NumberQuestion numberQuestion = applicantQuestion.getNumberQuestion();
+    NumberQuestion numberQuestion = new NumberQuestion(numberQuestionDefinition, applicantData);
 
     assertThat(numberQuestion.hasTypeSpecificErrors()).isFalse();
     assertThat(numberQuestion.hasQuestionErrors()).isFalse();
@@ -92,10 +83,7 @@ public class NumberQuestionTest {
   public void withMinAndMaxValue_withInvalidApplicantData_failsValidation(
       long value, String expectedErrorMessage) {
     applicantData.putLong(minAndMaxNumberQuestionDefinition.getNumberPath(), value);
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(minAndMaxNumberQuestionDefinition, applicantData);
-
-    NumberQuestion numberQuestion = applicantQuestion.getNumberQuestion();
+    NumberQuestion numberQuestion = new NumberQuestion(numberQuestionDefinition, applicantData);
 
     assertThat(numberQuestion.hasTypeSpecificErrors()).isFalse();
     assertThat(numberQuestion.getQuestionErrors())

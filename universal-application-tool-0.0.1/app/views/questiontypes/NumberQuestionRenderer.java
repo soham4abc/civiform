@@ -21,7 +21,7 @@ public class NumberQuestionRenderer extends BaseHtmlView implements ApplicantQue
 
   @Override
   public Tag render() {
-    NumberQuestion numberQuestion = question.getNumberQuestion();
+    NumberQuestion numberQuestion = (NumberQuestion) question;
 
     return div()
         .withId(question.getPath().path())

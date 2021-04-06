@@ -12,17 +12,17 @@ import services.question.QuestionType;
 import services.question.TranslationNotFoundException;
 
 /**
- * Represents a question in the context of a specific applicant. Contains non-static inner classes
- * that represent the question as a specific question type (e.g. {@link NameQuestion}). These inner
- * classes provide access to the applicant's answer for the question. They can also implement
+ * Represents a question in the context of a specific applicant. Classes that extend this one
+ * represent the question as a specific question type (e.g. {@link NameQuestion}). These child
+ * classes provide access to the applicant's answer for the question. They also implement
  * server-side validation logic.
  */
-public class ApplicantQuestion {
+public abstract class ApplicantQuestion {
 
   private final QuestionDefinition questionDefinition;
   private final ApplicantData applicantData;
 
-  public ApplicantQuestion(QuestionDefinition questionDefinition, ApplicantData applicantData) {
+  protected ApplicantQuestion(QuestionDefinition questionDefinition, ApplicantData applicantData) {
     this.questionDefinition = checkNotNull(questionDefinition);
     this.applicantData = checkNotNull(applicantData);
   }
@@ -59,15 +59,17 @@ public class ApplicantQuestion {
     return questionDefinition.getPath();
   }
 
-  public boolean hasQuestionErrors() {
-    return errorsPresenter().hasQuestionErrors();
-  }
+  /** Returns true if values do not meet conditions defined by admins. */
+  public abstract boolean hasQuestionErrors();
+
+  /**
+   * Returns true if there is any type specific errors. The validation does not consider
+   * admin-defined conditions.
+   */
+  public abstract boolean hasTypeSpecificErrors();
 
   public boolean hasErrors() {
-    if (hasQuestionErrors()) {
-      return true;
-    }
-    return errorsPresenter().hasTypeSpecificErrors();
+    return hasQuestionErrors() || hasTypeSpecificErrors();
   }
 
   public Optional<Long> getUpdatedInProgramMetadata() {
@@ -76,43 +78,6 @@ public class ApplicantQuestion {
 
   public Optional<Long> getLastUpdatedTimeMetadata() {
     return applicantData.readLong(questionDefinition.getLastUpdatedTimePath());
-  }
-
-  public AddressQuestion getAddressQuestion() {
-    return new AddressQuestion(this);
-  }
-
-  public SingleSelectQuestion getSingleSelectQuestion() {
-    return new SingleSelectQuestion(this);
-  }
-
-  public TextQuestion getTextQuestion() {
-    return new TextQuestion(this);
-  }
-
-  public NameQuestion getNameQuestion() {
-    return new NameQuestion(this);
-  }
-
-  public NumberQuestion getNumberQuestion() {
-    return new NumberQuestion(this);
-  }
-
-  public PresentsErrors errorsPresenter() {
-    switch (getType()) {
-      case ADDRESS:
-        return getAddressQuestion();
-      case DROPDOWN:
-        return getSingleSelectQuestion();
-      case NAME:
-        return getNameQuestion();
-      case NUMBER:
-        return getNumberQuestion();
-      case TEXT:
-        return getTextQuestion();
-      default:
-        throw new RuntimeException("Unrecognized question type: " + getType());
-    }
   }
 
   @Override

@@ -3,19 +3,20 @@ package services.applicant.question;
 import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
 import services.Path;
+import services.applicant.ApplicantData;
 import services.applicant.ValidationErrorMessage;
 import services.question.NameQuestionDefinition;
+import services.question.QuestionDefinition;
 import services.question.QuestionType;
 
-public class NameQuestion implements PresentsErrors {
+public class NameQuestion extends ApplicantQuestion {
 
-  private final ApplicantQuestion applicantQuestion;
   private Optional<String> firstNameValue;
   private Optional<String> middleNameValue;
   private Optional<String> lastNameValue;
 
-  public NameQuestion(ApplicantQuestion applicantQuestion) {
-    this.applicantQuestion = applicantQuestion;
+  public NameQuestion(QuestionDefinition questionDefinition, ApplicantData applicantData) {
+    super(questionDefinition, applicantData);
     assertQuestionType();
   }
 
@@ -74,7 +75,7 @@ public class NameQuestion implements PresentsErrors {
       return firstNameValue;
     }
 
-    firstNameValue = applicantQuestion.getApplicantData().readString(getFirstNamePath());
+    firstNameValue = getApplicantData().readString(getFirstNamePath());
 
     return firstNameValue;
   }
@@ -84,7 +85,7 @@ public class NameQuestion implements PresentsErrors {
       return middleNameValue;
     }
 
-    middleNameValue = applicantQuestion.getApplicantData().readString(getMiddleNamePath());
+    middleNameValue = getApplicantData().readString(getMiddleNamePath());
 
     return middleNameValue;
   }
@@ -94,24 +95,21 @@ public class NameQuestion implements PresentsErrors {
       return lastNameValue;
     }
 
-    lastNameValue = applicantQuestion.getApplicantData().readString(getLastNamePath());
+    lastNameValue = getApplicantData().readString(getLastNamePath());
 
     return lastNameValue;
   }
 
   public void assertQuestionType() {
-    if (!applicantQuestion.getType().equals(QuestionType.NAME)) {
+    if (!getType().equals(QuestionType.NAME)) {
       throw new RuntimeException(
-          String.format(
-              "Question is not a NAME question: %s (type: %s)",
-              applicantQuestion.getQuestionDefinition().getPath(),
-              applicantQuestion.getQuestionDefinition().getQuestionType()));
+          String.format("Question is not a NAME question: %s (type: %s)", getPath(), getType()));
     }
   }
 
   public NameQuestionDefinition getQuestionDefinition() {
     assertQuestionType();
-    return (NameQuestionDefinition) applicantQuestion.getQuestionDefinition();
+    return (NameQuestionDefinition) super.getQuestionDefinition();
   }
 
   public Path getMiddleNamePath() {
@@ -127,10 +125,10 @@ public class NameQuestion implements PresentsErrors {
   }
 
   private boolean firstNameAnswered() {
-    return applicantQuestion.getApplicantData().hasPath(getFirstNamePath());
+    return getApplicantData().hasPath(getFirstNamePath());
   }
 
   private boolean lastNameAnswered() {
-    return applicantQuestion.getApplicantData().hasPath(getLastNamePath());
+    return getApplicantData().hasPath(getLastNamePath());
   }
 }

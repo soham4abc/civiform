@@ -34,10 +34,7 @@ public class AddressQuestionTest {
 
   @Test
   public void withEmptyApplicantData() {
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(addressQuestionDefinition, applicantData);
-
-    AddressQuestion addressQuestion = new AddressQuestion(applicantQuestion);
+    AddressQuestion addressQuestion = new AddressQuestion(addressQuestionDefinition, applicantData);
 
     assertThat(addressQuestion.hasTypeSpecificErrors()).isFalse();
     assertThat(addressQuestion.hasQuestionErrors()).isFalse();
@@ -49,10 +46,7 @@ public class AddressQuestionTest {
     applicantData.putString(addressQuestionDefinition.getCityPath(), "Seattle");
     applicantData.putString(addressQuestionDefinition.getStatePath(), "WA");
     applicantData.putString(addressQuestionDefinition.getZipPath(), "98101");
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(addressQuestionDefinition, applicantData);
-
-    AddressQuestion addressQuestion = applicantQuestion.getAddressQuestion();
+    AddressQuestion addressQuestion = new AddressQuestion(addressQuestionDefinition, applicantData);
 
     assertThat(addressQuestion.hasTypeSpecificErrors()).isFalse();
     assertThat(addressQuestion.hasQuestionErrors()).isFalse();
@@ -68,10 +62,7 @@ public class AddressQuestionTest {
     applicantData.putString(addressQuestionDefinition.getCityPath(), "");
     applicantData.putString(addressQuestionDefinition.getStatePath(), "");
     applicantData.putString(addressQuestionDefinition.getZipPath(), "");
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(addressQuestionDefinition, applicantData);
-
-    AddressQuestion addressQuestion = applicantQuestion.getAddressQuestion();
+    AddressQuestion addressQuestion = new AddressQuestion(addressQuestionDefinition, applicantData);
 
     assertThat(addressQuestion.hasTypeSpecificErrors()).isTrue();
     assertThat(addressQuestion.getStreetErrors())
@@ -90,10 +81,7 @@ public class AddressQuestionTest {
     applicantData.putString(addressQuestionDefinition.getCityPath(), "Seattle");
     applicantData.putString(addressQuestionDefinition.getStatePath(), "WA");
     applicantData.putString(addressQuestionDefinition.getZipPath(), "not a zip code");
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(addressQuestionDefinition, applicantData);
-
-    AddressQuestion addressQuestion = applicantQuestion.getAddressQuestion();
+    AddressQuestion addressQuestion = new AddressQuestion(addressQuestionDefinition, applicantData);
 
     assertThat(addressQuestion.hasTypeSpecificErrors()).isTrue();
     assertThat(addressQuestion.getZipErrors())

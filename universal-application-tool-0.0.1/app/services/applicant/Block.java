@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import services.applicant.question.ApplicantQuestion;
+import services.applicant.question.ApplicantQuestionFactory;
 import services.program.BlockDefinition;
 import services.program.ProgramQuestionDefinition;
 
@@ -50,7 +51,7 @@ public final class Block {
                   .map(ProgramQuestionDefinition::getQuestionDefinition)
                   .map(
                       questionDefinition ->
-                          new ApplicantQuestion(questionDefinition, applicantData))
+                          ApplicantQuestionFactory.createQuestion(questionDefinition, applicantData))
                   .collect(toImmutableList()));
     }
     return questionsMemo.get();

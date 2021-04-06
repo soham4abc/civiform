@@ -36,10 +36,7 @@ public class NameQuestionTest {
 
   @Test
   public void withEmptyApplicantData() {
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(nameQuestionDefinition, applicantData);
-
-    NameQuestion nameQuestion = new NameQuestion(applicantQuestion);
+    NameQuestion nameQuestion = new NameQuestion(nameQuestionDefinition, applicantData);
 
     assertThat(nameQuestion.hasFirstNameValue()).isFalse();
     assertThat(nameQuestion.hasMiddleNameValue()).isFalse();
@@ -54,10 +51,7 @@ public class NameQuestionTest {
     applicantData.putString(nameQuestionDefinition.getFirstNamePath(), firstName);
     applicantData.putString(nameQuestionDefinition.getMiddleNamePath(), middleName);
     applicantData.putString(nameQuestionDefinition.getLastNamePath(), lastName);
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(nameQuestionDefinition, applicantData);
-
-    NameQuestion nameQuestion = applicantQuestion.getNameQuestion();
+    NameQuestion nameQuestion = new NameQuestion(nameQuestionDefinition, applicantData);
 
     assertThat(nameQuestion.hasTypeSpecificErrors()).isFalse();
     assertThat(nameQuestion.hasQuestionErrors()).isFalse();
@@ -75,10 +69,7 @@ public class NameQuestionTest {
     applicantData.putString(nameQuestionDefinition.getFirstNamePath(), firstName);
     applicantData.putString(nameQuestionDefinition.getMiddleNamePath(), middleName);
     applicantData.putString(nameQuestionDefinition.getLastNamePath(), lastName);
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(nameQuestionDefinition, applicantData);
-
-    NameQuestion nameQuestion = applicantQuestion.getNameQuestion();
+    NameQuestion nameQuestion = new NameQuestion(nameQuestionDefinition, applicantData);
 
     assertThat(nameQuestion.hasQuestionErrors()).isFalse();
     assertThat(nameQuestion.hasTypeSpecificErrors()).isTrue();

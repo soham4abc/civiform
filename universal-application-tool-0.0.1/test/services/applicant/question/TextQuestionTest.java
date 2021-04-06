@@ -47,10 +47,7 @@ public class TextQuestionTest {
 
   @Test
   public void withEmptyApplicantData() {
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(textQuestionDefinition, applicantData);
-
-    TextQuestion textQuestion = new TextQuestion(applicantQuestion);
+    TextQuestion textQuestion = new TextQuestion(textQuestionDefinition, applicantData);
 
     assertThat(textQuestion.hasTypeSpecificErrors()).isFalse();
     assertThat(textQuestion.hasQuestionErrors()).isFalse();
@@ -59,10 +56,7 @@ public class TextQuestionTest {
   @Test
   public void withApplicantData_passesValidation() {
     applicantData.putString(textQuestionDefinition.getTextPath(), "hello");
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(textQuestionDefinition, applicantData);
-
-    TextQuestion textQuestion = new TextQuestion(applicantQuestion);
+    TextQuestion textQuestion = new TextQuestion(textQuestionDefinition, applicantData);
 
     assertThat(textQuestion.getTextValue().get()).isEqualTo("hello");
     assertThat(textQuestion.hasTypeSpecificErrors()).isFalse();
@@ -73,10 +67,7 @@ public class TextQuestionTest {
   @Parameters({"abc", "abcd"})
   public void withMinAndMaxLength_withValidApplicantData_passesValidation(String value) {
     applicantData.putString(minAndMaxLengthTextQuestionDefinition.getTextPath(), value);
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(minAndMaxLengthTextQuestionDefinition, applicantData);
-
-    TextQuestion textQuestion = new TextQuestion(applicantQuestion);
+    TextQuestion textQuestion = new TextQuestion(textQuestionDefinition, applicantData);
 
     assertThat(textQuestion.getTextValue().get()).isEqualTo(value);
     assertThat(textQuestion.hasTypeSpecificErrors()).isFalse();
@@ -94,10 +85,7 @@ public class TextQuestionTest {
   public void withMinAndMaxLength_withInValidApplicantData_failsValidation(
       String value, String expectedErrorMessage) {
     applicantData.putString(minAndMaxLengthTextQuestionDefinition.getTextPath(), value);
-    ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(minAndMaxLengthTextQuestionDefinition, applicantData);
-
-    TextQuestion textQuestion = new TextQuestion(applicantQuestion);
+    TextQuestion textQuestion = new TextQuestion(textQuestionDefinition, applicantData);
 
     if (textQuestion.getTextValue().isPresent()) {
       assertThat(textQuestion.getTextValue().get()).isEqualTo(value);

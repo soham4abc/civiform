@@ -21,7 +21,7 @@ public class TextQuestionRenderer extends BaseHtmlView implements ApplicantQuest
 
   @Override
   public Tag render() {
-    TextQuestion textQuestion = question.getTextQuestion();
+    TextQuestion textQuestion = (TextQuestion) question;
 
     return div()
         .withId(question.getPath().path())

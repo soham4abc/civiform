@@ -2,6 +2,7 @@ package views.questiontypes;
 
 import services.applicant.ApplicantData;
 import services.applicant.question.ApplicantQuestion;
+import services.applicant.question.ApplicantQuestionFactory;
 import services.question.QuestionDefinition;
 import services.question.QuestionDefinitionBuilder;
 import services.question.QuestionType;
@@ -13,7 +14,7 @@ public class ApplicantQuestionRendererFactory {
       throws UnsupportedQuestionTypeException {
     QuestionDefinition questionDefinition = QuestionDefinitionBuilder.sample(questionType).build();
     ApplicantQuestion applicantQuestion =
-        new ApplicantQuestion(questionDefinition, new ApplicantData());
+        ApplicantQuestionFactory.createQuestion(questionDefinition, new ApplicantData());
     return getRenderer(applicantQuestion);
   }
 

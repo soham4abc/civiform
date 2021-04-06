@@ -3,17 +3,18 @@ package services.applicant.question;
 import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
 import services.Path;
+import services.applicant.ApplicantData;
 import services.applicant.ValidationErrorMessage;
 import services.question.NumberQuestionDefinition;
+import services.question.QuestionDefinition;
 import services.question.QuestionType;
 
-public class NumberQuestion implements PresentsErrors {
+public class NumberQuestion extends ApplicantQuestion {
 
-  private final ApplicantQuestion applicantQuestion;
   private Optional<Long> numberValue;
 
-  public NumberQuestion(ApplicantQuestion applicantQuestion) {
-    this.applicantQuestion = applicantQuestion;
+  public NumberQuestion(QuestionDefinition questionDefinition, ApplicantData applicantData) {
+    super(questionDefinition, applicantData);
     assertQuestionType();
   }
 
@@ -63,24 +64,21 @@ public class NumberQuestion implements PresentsErrors {
       return numberValue;
     }
 
-    numberValue = applicantQuestion.getApplicantData().readLong(getNumberPath());
+    numberValue = getApplicantData().readLong(getNumberPath());
 
     return numberValue;
   }
 
   public void assertQuestionType() {
-    if (!applicantQuestion.getType().equals(QuestionType.NUMBER)) {
+    if (!getType().equals(QuestionType.NUMBER)) {
       throw new RuntimeException(
-          String.format(
-              "Question is not a NUMBER question: %s (type: %s)",
-              applicantQuestion.getQuestionDefinition().getPath(),
-              applicantQuestion.getQuestionDefinition().getQuestionType()));
+          String.format("Question is not a NUMBER question: %s (type: %s)", getPath(), getType()));
     }
   }
 
   public NumberQuestionDefinition getQuestionDefinition() {
     assertQuestionType();
-    return (NumberQuestionDefinition) applicantQuestion.getQuestionDefinition();
+    return (NumberQuestionDefinition) super.getQuestionDefinition();
   }
 
   public Path getNumberPath() {

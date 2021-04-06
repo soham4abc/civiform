@@ -5,20 +5,21 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import services.Path;
+import services.applicant.ApplicantData;
 import services.applicant.ValidationErrorMessage;
 import services.question.AddressQuestionDefinition;
+import services.question.QuestionDefinition;
 import services.question.QuestionType;
 
-public class AddressQuestion implements PresentsErrors {
+public class AddressQuestion extends ApplicantQuestion {
 
-  private final ApplicantQuestion applicantQuestion;
   private Optional<String> streetValue;
   private Optional<String> cityValue;
   private Optional<String> stateValue;
   private Optional<String> zipValue;
 
-  public AddressQuestion(ApplicantQuestion applicantQuestion) {
-    this.applicantQuestion = applicantQuestion;
+  public AddressQuestion(QuestionDefinition questionDefinition, ApplicantData applicantData) {
+    super(questionDefinition, applicantData);
     assertQuestionType();
   }
 
@@ -115,7 +116,7 @@ public class AddressQuestion implements PresentsErrors {
       return streetValue;
     }
 
-    streetValue = applicantQuestion.getApplicantData().readString(getStreetPath());
+    streetValue = getApplicantData().readString(getStreetPath());
     return streetValue;
   }
 
@@ -124,7 +125,7 @@ public class AddressQuestion implements PresentsErrors {
       return cityValue;
     }
 
-    cityValue = applicantQuestion.getApplicantData().readString(getCityPath());
+    cityValue = getApplicantData().readString(getCityPath());
     return cityValue;
   }
 
@@ -133,7 +134,7 @@ public class AddressQuestion implements PresentsErrors {
       return stateValue;
     }
 
-    stateValue = applicantQuestion.getApplicantData().readString(getStatePath());
+    stateValue = getApplicantData().readString(getStatePath());
     return stateValue;
   }
 
@@ -142,23 +143,22 @@ public class AddressQuestion implements PresentsErrors {
       return zipValue;
     }
 
-    zipValue = applicantQuestion.getApplicantData().readString(getZipPath());
+    zipValue = getApplicantData().readString(getZipPath());
     return zipValue;
   }
 
   public void assertQuestionType() {
-    if (!applicantQuestion.getType().equals(QuestionType.ADDRESS)) {
+    if (!getType().equals(QuestionType.ADDRESS)) {
       throw new RuntimeException(
           String.format(
               "Question is not an ADDRESS question: %s (type: %s)",
-              applicantQuestion.getQuestionDefinition().getPath(),
-              applicantQuestion.getQuestionDefinition().getQuestionType()));
+              getQuestionDefinition().getPath(), getQuestionDefinition().getQuestionType()));
     }
   }
 
   public AddressQuestionDefinition getQuestionDefinition() {
     assertQuestionType();
-    return (AddressQuestionDefinition) applicantQuestion.getQuestionDefinition();
+    return (AddressQuestionDefinition) super.getQuestionDefinition();
   }
 
   public Path getStreetPath() {
@@ -178,18 +178,18 @@ public class AddressQuestion implements PresentsErrors {
   }
 
   private boolean streetAnswered() {
-    return applicantQuestion.getApplicantData().hasPath(getStreetPath());
+    return getApplicantData().hasPath(getStreetPath());
   }
 
   private boolean cityAnswered() {
-    return applicantQuestion.getApplicantData().hasPath(getCityPath());
+    return getApplicantData().hasPath(getCityPath());
   }
 
   private boolean stateAnswered() {
-    return applicantQuestion.getApplicantData().hasPath(getStatePath());
+    return getApplicantData().hasPath(getStatePath());
   }
 
   private boolean zipAnswered() {
-    return applicantQuestion.getApplicantData().hasPath(getZipPath());
+    return getApplicantData().hasPath(getZipPath());
   }
 }
