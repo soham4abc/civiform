@@ -179,21 +179,32 @@ public class QuestionController extends CiviFormController {
 
   @Secure(authorizers = Authorizers.Labels.UAT_ADMIN)
   public Result update(Request request, Long id, String questionType) {
+    ReadOnlyQuestionService readOnlyQuestionService =
+        service.getReadOnlyQuestionService().toCompletableFuture().join();
+    Optional<QuestionDefinition> maybeExistingQuestion;
+    try {
+      maybeExistingQuestion = Optional.of(readOnlyQuestionService.getQuestionDefinition(id));
+    } catch (QuestionNotFoundException e) {
+      maybeExistingQuestion = Optional.empty();
+    }
+
     QuestionForm questionForm;
     try {
-      questionForm =
-          QuestionFormBuilder.createFromRequest(
-              request, formFactory, QuestionType.of(questionType));
-    } catch (InvalidQuestionTypeException e) {
+      if (maybeExistingQuestion.isPresent()) {
+        questionForm = QuestionFormBuilder.create(maybeExistingQuestion.get());
+      } else {
+        questionForm =
+            QuestionFormBuilder.createFromRequest(
+                request, formFactory, QuestionType.of(questionType));
+      }
+    } catch (InvalidQuestionTypeException invalid) {
       return badRequest(invalidQuestionTypeMessage(questionType));
     }
 
-    ReadOnlyQuestionService roService =
-        service.getReadOnlyQuestionService().toCompletableFuture().join();
-
-    QuestionDefinition questionDefinition;
+    QuestionDefinition updatedQuestion;
     try {
-      questionDefinition = getBuilderWithQuestionPath(roService, questionForm).setId(id).build();
+      updatedQuestion =
+          getBuilderWithQuestionPath(readOnlyQuestionService, questionForm).setId(id).build();
     } catch (UnsupportedQuestionTypeException e) {
       // Failed while trying to update a question that was already created for the given question
       // type
@@ -202,7 +213,7 @@ public class QuestionController extends CiviFormController {
 
     ErrorAnd<QuestionDefinition, CiviFormError> errorAndUpdatedQuestionDefinition;
     try {
-      errorAndUpdatedQuestionDefinition = service.update(questionDefinition);
+      errorAndUpdatedQuestionDefinition = service.update(updatedQuestion);
     } catch (InvalidUpdateException e) {
       // Ill-formed update request.
       return badRequest(e.toString());
@@ -211,7 +222,7 @@ public class QuestionController extends CiviFormController {
     if (errorAndUpdatedQuestionDefinition.isError()) {
       String errorMessage = joinErrors(errorAndUpdatedQuestionDefinition.getErrors());
       Optional<QuestionDefinition> maybeEnumerationQuestion =
-          maybeGetEnumerationQuestion(roService, questionDefinition);
+          maybeGetEnumerationQuestion(readOnlyQuestionService, updatedQuestion);
       return ok(
           editView.renderEditQuestionForm(
               request, id, questionForm, maybeEnumerationQuestion, errorMessage));

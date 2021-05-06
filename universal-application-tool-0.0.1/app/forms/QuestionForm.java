@@ -19,12 +19,20 @@ public abstract class QuestionForm {
   private String questionText;
   private String questionHelpText;
 
+  // We set the localized text and help text here so that if the question already exists, we do not
+  // overwrite the localized entries.
+  private ImmutableMap<Locale, String> localizedQuestionText;
+  private ImmutableMap<Locale, String> localizedQuestionHelpText;
+
   protected QuestionForm() {
     questionName = "";
     questionDescription = "";
     enumeratorId = Optional.empty();
     questionText = "";
     questionHelpText = "";
+    // This is a new question - start with empty localized maps.
+    localizedQuestionText = ImmutableMap.of();
+    localizedQuestionHelpText = ImmutableMap.of();
   }
 
   protected QuestionForm(QuestionDefinition qd) {
@@ -43,6 +51,9 @@ public abstract class QuestionForm {
     } catch (TranslationNotFoundException e) {
       questionHelpText = "Missing Text";
     }
+
+    localizedQuestionText = qd.getQuestionText();
+    localizedQuestionHelpText = qd.getQuestionHelpText();
   }
 
   public String getQuestionName() {
@@ -89,12 +100,12 @@ public abstract class QuestionForm {
   }
 
   public QuestionDefinitionBuilder getBuilder(Path path) {
-    ImmutableMap<Locale, String> questionTextMap =
-        questionText.isEmpty() ? ImmutableMap.of() : ImmutableMap.of(Locale.US, questionText);
-    ImmutableMap<Locale, String> questionHelpTextMap =
-        questionHelpText.isEmpty()
-            ? ImmutableMap.of()
-            : ImmutableMap.of(Locale.US, questionHelpText);
+    localizedQuestionText =
+        LocalizationUtils.overwriteExistingTranslation(
+            localizedQuestionText, LocalizationUtils.DEFAULT_LOCALE, questionText);
+    localizedQuestionHelpText =
+        LocalizationUtils.overwriteExistingTranslation(
+            localizedQuestionHelpText, LocalizationUtils.DEFAULT_LOCALE, questionHelpText);
 
     QuestionDefinitionBuilder builder =
         new QuestionDefinitionBuilder()
@@ -103,8 +114,8 @@ public abstract class QuestionForm {
             .setPath(path)
             .setDescription(questionDescription)
             .setEnumeratorId(enumeratorId)
-            .setQuestionText(questionTextMap)
-            .setQuestionHelpText(questionHelpTextMap);
+            .setQuestionText(localizedQuestionText)
+            .setQuestionHelpText(localizedQuestionHelpText);
     return builder;
   }
 }
