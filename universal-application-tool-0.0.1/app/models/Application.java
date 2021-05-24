@@ -26,12 +26,23 @@ public class Application extends BaseModel {
   @DbJson
   private String object;
 
+  private String submitterEmail;
+
   public Application(Applicant applicant, Program program, LifecycleStage lifecycleStage) {
     this.applicant = applicant;
     ApplicantData data = applicant.getApplicantData();
     this.object = data.asJsonString();
     this.program = program;
     this.lifecycleStage = lifecycleStage;
+  }
+
+  public String getSubmitterEmail() {
+    return this.submitterEmail;
+  }
+
+  public Application setSubmitterEmail(String submitterEmail) {
+    this.submitterEmail = submitterEmail;
+    return this;
   }
 
   public Applicant getApplicant() {

@@ -2,6 +2,7 @@ package services.applicant;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import auth.UatProfile;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -190,9 +191,10 @@ public class ApplicantServiceImpl implements ApplicantService {
   }
 
   @Override
-  public CompletionStage<Application> submitApplication(long applicantId, long programId) {
+  public CompletionStage<Application> submitApplication(
+      long applicantId, long programId, UatProfile submitterProfile) {
     return applicationRepository
-        .submitApplication(applicantId, programId)
+        .submitApplication(applicantId, programId, submitterProfile)
         .thenComposeAsync(
             applicationMaybe -> {
               if (applicationMaybe.isEmpty()) {

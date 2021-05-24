@@ -3,6 +3,7 @@ package repository;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
+import auth.UatProfile;
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import java.util.List;
@@ -44,26 +45,30 @@ public class ApplicationRepository {
    * applications to a program with the same name (to include past versions of the same program),
    * and create a new application in the active state.
    */
-  public CompletionStage<Application> submitApplication(Applicant applicant, Program program) {
+  public CompletionStage<Application> submitApplication(
+      Applicant applicant, Program program, UatProfile submitterProfile) {
     return supplyAsync(
         () -> {
-          return submitApplicationInternal(applicant, program);
+          return submitApplicationInternal(applicant, program, submitterProfile);
         },
         executionContext.current());
   }
 
   public CompletionStage<Optional<Application>> submitApplication(
-      long applicantId, long programId) {
+      long applicantId, long programId, UatProfile submitterProfile) {
     return this.perform(
         applicantId,
         programId,
         (ApplicationArguments appArgs) ->
-            submitApplicationInternal(appArgs.applicant, appArgs.program));
+            submitApplicationInternal(appArgs.applicant, appArgs.program, submitterProfile));
   }
 
-  private Application submitApplicationInternal(Applicant applicant, Program program) {
+  private Application submitApplicationInternal(
+      Applicant applicant, Program program, UatProfile submitterProfile) {
     ebeanServer.beginTransaction();
     try {
+      String submitterEmail = submitterProfile.getAccount().join().getEmailAddress();
+
       List<Application> oldApplications =
           ebeanServer
               .createQuery(Application.class)
@@ -81,6 +86,7 @@ public class ApplicationRepository {
         application.save();
       }
       Application application = new Application(applicant, program, LifecycleStage.ACTIVE);
+      application.setSubmitterEmail(submitterEmail);
       application.save();
       ebeanServer.commitTransaction();
       return application;
